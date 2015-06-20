@@ -1,15 +1,14 @@
 package com.github.mrmechko.swordnet
 
 import com.github.mrmechko.swordnet.dao.{WordNetLoader}
-import com.github.mrmechko.swordnet.structures.{SSynset, SPos, SKey}
+import com.github.mrmechko.swordnet.structures.{SenseInfo, SSynset, SPos, SKey}
 
 object SWordNet {
 
-  private val keys : Seq[SKey] = WordNetLoader.loadSenseKeys
   private val _semanticLinks : Map[(Short, Int), Seq[Int]] = WordNetLoader.loadSemanticLinks.groupBy(x => (x._1, x._2)).mapValues(_.map(_._3)).withDefaultValue(List())
 
 
-  private val _k2S = keys.map(s => s.key -> s).toMap
+  private val _k2S = SKey.keys.map(s => s.key -> s).toMap
 
   /**
    * Create a SKey from a %-formatted sense key
@@ -22,7 +21,7 @@ object SWordNet {
 
   def getk2S(key : String) : Option[SKey] = _k2S.get(key)
 
-  private val _l2S = keys.groupBy(_.lemma)
+  private val _l2S = SKey.keys.groupBy(_.lemma)
 
   /**
    * get all SKeys which correspond to lemma
@@ -31,7 +30,7 @@ object SWordNet {
    */
   def l2S(lemma : String) : Seq[SKey] = _l2S.getOrElse(lemma, Seq())
 
-  private val _lp2S = keys.groupBy(k => (k.lemma, k.pos))
+  private val _lp2S = SKey.keys.groupBy(k => (k.lemma, k.pos))
   /**
    * Get all SKeys which correspond to a lemma and a part of speech
    * @param lemma
@@ -40,7 +39,7 @@ object SWordNet {
    */
   def lp2S(lemma : String, pos : SPos) : Seq[SKey] = _lp2S.getOrElse((lemma,pos), Seq())
 
-  private val _wpn2S = keys.map(k => k.id -> k).toMap
+  private val _wpn2S = SKey.keys.map(k => k.id -> k).toMap
   /**
    * get the SKey corresponding to lemma.pos.sensenumber
    * @param lemma
@@ -57,7 +56,7 @@ object SWordNet {
 
 
 
-  private val _o2s = keys.groupBy(_.offset)
+  private val _o2s = SKey.keys.groupBy(_.offset)
   /**
    * Get a synset by offset and pos (offsets from wnsql already include the posnumber, so offsets are actually unique)
    * @param offset

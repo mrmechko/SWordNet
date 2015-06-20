@@ -7,8 +7,8 @@ import org.scalatest.{Matchers, FlatSpec}
 class TypeTests extends FlatSpec with Matchers {
 
   "An SKey" should "look like an SKey" in {
-    (SKey("cat%1:05:00::").toString) shouldBe "SKey(cat%1:05:00::)"
-    (SKey("cat#n#1").toString) shouldBe "SKey(cat%1:05:00::)"
+    (SKey.from("cat%1:05:00::").toString) shouldBe "SKey(cat%1:05:00::)"
+    (SKey.from("cat#n#1").toString) shouldBe "SKey(cat%1:05:00::)"
   }
 
   "An SPos" should "look like an SPos" in {
@@ -36,7 +36,7 @@ class TypeTests extends FlatSpec with Matchers {
   }
 
   "cat%1:05:00::" should "be render SKeys" in {
-    val cat = SKey("cat%1:05:00::")
+    val cat = SKey.from("cat%1:05:00::")
     cat.key shouldBe "cat%1:05:00::"
     cat.lemma shouldBe "cat"
     cat.pos shouldBe SPos('n')
@@ -44,7 +44,7 @@ class TypeTests extends FlatSpec with Matchers {
     cat.senseNumber shouldBe 1
     cat.id shouldBe "cat#n#1"
 
-    cat.synset.keys shouldBe(Seq(cat, SKey("true_cat%1:05:00::")))
+    cat.synset.keys.sortBy(_.key) shouldBe Seq(cat, SKey("true_cat%1:05:00::")).sortBy(_.key)
     cat.hasSemantic(SRelationType.hypernym).map(_.head).foreach(println)
   }
 

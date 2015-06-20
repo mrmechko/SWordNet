@@ -9,13 +9,13 @@ import scala.io.Source
  */
 object WordNetLoader {
 
-  def loadSenseKeys : Seq[SKey] = {
+  def loadSenseInfos : Map[String, SenseInfo] = {
     Source.fromURL(getClass.getClassLoader().getResource("wn31.sensekeys"))
       .getLines().drop(4).grouped(4).map(entry => {
         val key = entry(0).stripLineEnd
         val si = entry(1).stripLineEnd.split("\t")
         val d = entry(2).stripLineEnd
-        SKey.apply(key, SenseInfo(
+        key -> SenseInfo(
           pos = SPos(si(1)),
           synsetid = si(2).toInt,
           senseid = si(3).toInt,
@@ -23,8 +23,8 @@ object WordNetLoader {
           tagCount = si(5).toInt,
           definition = d,
           lemma = si(0)
-        ))
-      }).toSeq
+        )
+      }).toMap
   }
   def loadSemanticLinks : Seq[(Short, Int, Int)] = {
     Source.fromURL(getClass.getClassLoader().getResource("semantic.wn31.links"))

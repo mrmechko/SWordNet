@@ -1,5 +1,6 @@
 package com.github.mrmechko.swordnet.structures
 import com.github.mrmechko.swordnet.SWordNet
+import com.github.mrmechko.swordnet.dao.WordNetLoader
 
 
 sealed trait SKey {
@@ -21,7 +22,12 @@ case class SenseInfo(pos : SPos, synsetid: Int, senseid : Int, sensenum : Short,
 
 object SKey {
 
-  private case class SKeyImpl(key : String, info : SenseInfo) extends SKey {
+  private val senseinfos : Map[String, SenseInfo] = WordNetLoader.loadSenseInfos
+
+  val keys : Seq[SKey] = senseinfos.keys.map(SKeyImpl(_)).toSeq
+
+  private case class SKeyImpl(key : String) extends SKey {
+    private val info : SenseInfo = senseinfos(key)
     override def lemma: String = info.lemma
 
     override def synset: SSynset = SSynset(this)
@@ -39,15 +45,15 @@ object SKey {
     override def tagCount: Int = info.tagCount
   }
 
-  def apply(query : String) : SKey = {
+  def apply(key : String) : SKey = SKeyImpl(key)
+
+  def unapply(key : SKey) : Option[String] = Some(key.key)
+
+  def from(query : String) : SKey = {
     SWordNet.getk2S(query) match {
       case Some(x) => x
       case None => SWordNet.wpn2S(query)
     }
-  }
-
-  def apply(key : String, info : SenseInfo) : SKey = {
-    SKeyImpl(key, info)
   }
 
   def get(query : String) : Option[SKey] = {
@@ -56,53 +62,6 @@ object SKey {
       case Some(x) => k
       case None => SWordNet.getwpn2S(query)
     }
-  }
-}
-
-trait SSynset {
-  def lemmas : Seq[String]
-  def pos : SPos
-  def keys : Seq[SKey]
-  def head : SKey
-  def offsetString : String
-  def offset : Int
-  def gloss : String
-  def examples : Seq[String]
-  def hasSemantic(relation : SRelationType) : Seq[SSynset]
-  override def toString : String = "SSynset(%s)".format(head.key)
-}
-
-object SSynset {
-  private case class SSynsetImpl(keys : Seq[SKey]) extends SSynset {
-    override def lemmas: Seq[String] = keys.map(_.lemma)
-
-    override def gloss: String = head.definition
-
-    override def offset: Int = head.offset
-
-    override def pos: SPos = head.pos
-
-    override def offsetString: String = "%s%8d".format(pos.asChar, offset)
-
-    override def examples: Seq[String] = ???
-
-    val head: SKey = keys.sortBy(-_.tagCount).head
-
-    override def hasSemantic(relation: SRelationType): Seq[SSynset] = SWordNet.semanticLinks(this, relation.linkid)
-  }
-
-  def apply(offset : Int, pos : SPos) : SSynset = {
-    SSynsetImpl(SWordNet.o2S(offset))
-  }
-
-  def get(offset : Int) : Option[SSynset] = {
-    val v = SWordNet.o2S(offset)
-    if(v.size > 0) Some(SSynsetImpl(SWordNet.o2S(offset)))
-    else None
-  }
-
-  def apply(skey : SKey) : SSynset = {
-    SSynsetImpl(SWordNet.o2S(skey.offset))
   }
 }
 
