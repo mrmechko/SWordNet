@@ -57,6 +57,7 @@ object SWordNet {
 
 
   private val _o2s = SKey.keys.groupBy(_.offset)
+
   /**
    * Get a synset by offset and pos (offsets from wnsql already include the posnumber, so offsets are actually unique)
    * @param offset
