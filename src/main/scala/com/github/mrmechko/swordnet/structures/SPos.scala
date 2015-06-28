@@ -10,7 +10,8 @@ sealed trait SPos {
 }
 
 object SPos {
-  val c2s : Map[Char, String] = Map('n'->"noun", 'v'->"verb", 'a'->"adjective", 'r'->"adverb", 's'->"satellite").withDefaultValue("other")
+  val wnp : List[Char] = List('n', 'v', 'a', 'r')
+  val c2s : Map[Char, String] = Map('n'->"noun", 'v'->"verb", 'a'->"adjective", 'r'->"adverb", 's'->"satellite", 'p'->"preposition").withDefaultValue("other")
   val c2i : Map[Char, Int] = Map('n'->1, 'v'->2, 'a'->3, 'r'->4, 's'->5).withDefaultValue(6)
   val s2c : Map[String, Char] = c2s.map(_.swap).withDefaultValue('_')
   val i2c : Map[Int, Char] = c2i.map(_.swap).withDefaultValue('_')

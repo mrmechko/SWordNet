@@ -54,8 +54,6 @@ object SWordNet {
   def getwpn2S(lemma : String, pos : SPos, sensenum : Int) : Option[SKey] = _wpn2S.get("%s#%s#%d".format(lemma, pos.asChar, sensenum))
   def getwpn2S(id : String) : Option[SKey] = _wpn2S.get(id)
 
-
-
   private val _o2s = SKey.keys.groupBy(_.offset)
 
   /**
