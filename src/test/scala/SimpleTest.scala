@@ -35,6 +35,12 @@ class TypeTests extends FlatSpec with Matchers {
     SPos(5) shouldBe SPos("satellite")
   }
 
+  "An SPos" should "take abbreviations of standard pos types" in {
+    SPos("adj").toString shouldBe "SPos(adjective)"
+    SPos("adv").toString shouldBe "SPos(adverb)"
+    SPos("prep").toString shouldBe "SPos(preposition)"
+  }
+
   "cat%1:05:00::" should "be render SKeys" in {
     val cat = SKey.from("cat%1:05:00::")
     cat.key shouldBe "cat%1:05:00::"
