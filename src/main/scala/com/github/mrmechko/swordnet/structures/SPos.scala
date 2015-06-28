@@ -16,6 +16,8 @@ object SPos {
   val s2c : Map[String, Char] = c2s.map(_.swap).withDefaultValue('_')
   val i2c : Map[Int, Char] = c2i.map(_.swap).withDefaultValue('_')
 
+  val prefixes : Map[String, String] = Map("adj" -> "adjective", "adv" -> "adverb", "sat" -> "satellite", "prep"->"preposition")
+
   private case class SPosImpl(asChar : Char) extends SPos {
     override def toString: String = "SPos(%s)".format(c2s(asChar))
     override def asString: String = c2s(asChar)
@@ -23,7 +25,8 @@ object SPos {
   }
 
   def apply(int : Int) : SPos = SPosImpl(i2c(int))
-  def apply(string : String) : SPos = SPosImpl(s2c.getOrElse(string, string.head.toLower))
+  //STrips has prefixes
+  def apply(string : String) : SPos = SPosImpl(s2c.getOrElse(prefixes.getOrElse(string, string), string.head.toLower))
   def apply(char : Char) : SPos = SPosImpl(char.toLower)
 
 }
